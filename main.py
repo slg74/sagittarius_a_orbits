@@ -12,6 +12,10 @@ pygame.display.set_caption(
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+ORANGE = (255, 165, 0)
+YELLOW = (255, 255, 0)
+TEAL = (0, 128, 128)
 
 
 class StellarObject:
@@ -113,17 +117,19 @@ def main():
     sagittarius_a.sagittarius_a = True
 
     # stars orbiting Sagittarius A*
-    s2 = StellarObject(-100 * au, 10, 5, WHITE, 12.5 * solar_mass)
-    s8 = StellarObject(120 * au, 10, 5, WHITE, 15 * solar_mass)
-    s12 = StellarObject(-130 * au, 10, 5, WHITE, 15 * solar_mass)
-    s13 = StellarObject(250 * au, 10, 5, WHITE, 15 * solar_mass)
+    s2 = StellarObject(-100 * au, 10, 4, RED, 12.5 * solar_mass)
+    s8 = StellarObject(120 * au, 10, 4, YELLOW, 15 * solar_mass)
+    s12 = StellarObject(-130 * au, 10, 4, ORANGE, 15 * solar_mass)
+    s13 = StellarObject(250 * au, 10, 4, GREEN, 15 * solar_mass)
+    s14 = StellarObject(-220 * au, 10, 4, TEAL, 15 * solar_mass)
 
     s2.y_velocity = 7005.3 * 1000
     s8.y_velocity = -8000 * 1000
     s12.y_velocity = 6000 * 1000
     s13.y_velocity = -5000.13 * 1000
+    s14.y_velocity = 5500.13 * 1000
 
-    stars = [sagittarius_a, s2, s8, s12, s13]
+    stars = [sagittarius_a, s2, s8, s12, s13, s14]
 
     background_stars = BackgroundStars(30, 1, WHITE)
 
