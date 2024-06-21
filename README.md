@@ -7,7 +7,7 @@ center of the Milky Way galaxy, sgr A*.
 
 </pre>
 
-TODO 1: ffmpeg script in bash for gif creation.  
+~~TODO 1: ffmpeg script in bash for gif creation.~~  
 TODO 2: use astropy for constants.  
 TODO 3: mess with orbital eccentricities and semimajor axes.  
 
