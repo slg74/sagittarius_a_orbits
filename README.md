@@ -7,4 +7,4 @@ center of the Milky Way galaxy, sgr A*.
 
 </pre>
 
-![sgr_A](sgr_A.mov)
+![sgr_A](sgr_A.gif)
