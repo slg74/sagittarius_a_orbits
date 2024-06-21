@@ -17,7 +17,7 @@ class StellarObject:
     # Constants
     AU = 149597870700  # 1 Astronomical Unit = 149,597,870,700 meters
     G = 6.67408e-11  # Gravitational constant, hopefully the same most everywhere.
-    SCALE = 2 / AU  # 1 AU = 100 pixels
+    SCALE = 1 / AU  # 1 AU = 100 pixels
     #TIMESTEP = 3600 * 24 * 365 * 10  # Timestep is number of seconds in 10 years.
     TIMESTEP = 3600 * 6
     #TIMESTEP = 3600
@@ -38,8 +38,6 @@ class StellarObject:
         self.y_velocity = 0
 
     def draw(self, window):
-        print(self.SCALE)
-        print(WIDTH)
 
         x = self.x * self.SCALE + WIDTH // 2
         y = self.y * self.SCALE + HEIGHT // 2
@@ -80,7 +78,7 @@ class StellarObject:
         self.y += self.y_velocity * self.TIMESTEP
 
         self.orbit.append((self.x, self.y))
-        print(self.orbit)
+        #print(self.orbit)
 
 
 def main():
@@ -88,7 +86,7 @@ def main():
     AU = 149597870700  # 1 Astronomical Unit = 149,597,870,700 meters
     SOLAR_MASS = 1.989 * 10 ** 30  # Solar mass in kg
     SAGITTARIUS_A_MASS = (
-        4 * 10**6 * 5 * SOLAR_MASS
+        4 * 10 ** 6 * 5 * SOLAR_MASS
     )  # Sagittarius A* mass is 4 million solar masses.
 
     sagittarius_a = StellarObject(0, 0, 1, GREEN, SAGITTARIUS_A_MASS)
