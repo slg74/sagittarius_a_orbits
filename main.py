@@ -1,5 +1,6 @@
 import math
 import pygame
+import random
 
 WIDTH, HEIGHT = 800, 600
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -12,15 +13,16 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 
+
 class StellarObject:
 
     # Constants
     AU = 149597870700  # 1 Astronomical Unit = 149,597,870,700 meters
     G = 6.67408e-11  # Gravitational constant, hopefully the same most everywhere.
     SCALE = 1 / AU  # 1 AU = 100 pixels
-    #TIMESTEP = 3600 * 24 * 365 * 10  # Timestep is number of seconds in 10 years.
+    # TIMESTEP = 3600 * 24 * 365 * 10  # Timestep is number of seconds in 10 years.
     TIMESTEP = 3600 * 6
-    #TIMESTEP = 3600
+    # TIMESTEP = 3600
 
     def __init__(self, x, y, radius, color, mass):
         self.x = x
@@ -78,15 +80,33 @@ class StellarObject:
         self.y += self.y_velocity * self.TIMESTEP
 
         self.orbit.append((self.x, self.y))
-        #print(self.orbit)
+        # print(self.orbit)
+
+
+class BackgroundStars:
+    def __init__(self, number_of_stars, radius, color):
+        self.number_of_stars = number_of_stars
+        self.stars = []
+        self.radius = radius
+        self.color = color
+
+        # Generate star positions during initialization
+        for _ in range(self.number_of_stars):
+            x = random.randint(0, WIDTH)
+            y = random.randint(0, HEIGHT)
+            self.stars.append((x, y))
+
+    def draw(self, window):
+        for x, y in self.stars:
+            pygame.draw.circle(window, self.color, (x, y), self.radius)
 
 
 def main():
 
     AU = 149597870700  # 1 Astronomical Unit = 149,597,870,700 meters
-    SOLAR_MASS = 1.989 * 10 ** 30  # Solar mass in kg
+    SOLAR_MASS = 1.989 * 10**30  # Solar mass in kg
     SAGITTARIUS_A_MASS = (
-        4 * 10**6 * 5 * SOLAR_MASS     # scaled up by 5
+        4 * 10**6 * 5 * SOLAR_MASS  # scaled up by 5
     )  # Sagittarius A* mass is 4 million solar masses.
 
     sagittarius_a = StellarObject(0, 0, 1, GREEN, SAGITTARIUS_A_MASS)
@@ -94,7 +114,7 @@ def main():
 
     # stars orbiting Sagittarius A*
     S2 = StellarObject(-100 * AU, 10, 5, WHITE, 12.5 * SOLAR_MASS)
-    S8 = StellarObject(120 * AU, 10,5, WHITE, 15 * SOLAR_MASS)
+    S8 = StellarObject(120 * AU, 10, 5, WHITE, 15 * SOLAR_MASS)
     S12 = StellarObject(-130 * AU, 10, 5, WHITE, 15 * SOLAR_MASS)
     S13 = StellarObject(250 * AU, 10, 5, WHITE, 15 * SOLAR_MASS)
 
@@ -104,6 +124,8 @@ def main():
     S13.y_velocity = -5000.13 * 1000
 
     stars = [sagittarius_a, S2, S8, S12, S13]
+
+    background_stars = BackgroundStars(30, 1, WHITE)
 
     run = True
     clock = pygame.time.Clock()
@@ -120,6 +142,8 @@ def main():
         for star in stars:
             star.update_position(stars)
             star.draw(WINDOW)
+
+        background_stars.draw(WINDOW)
 
         pygame.display.update()
 
