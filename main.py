@@ -18,7 +18,7 @@ class StellarObject:
 
     # Constants
     AU = 149597870700  # 1 Astronomical Unit = 149,597,870,700 meters
-    G = 6.67408e-11  # Gravitational constant, hopefully the same most everywhere.
+    G = 6.67408e-11  # Gravitational constant, hopefully the same almost everywhere.
     SCALE = 1 / AU  # 1 AU = 100 pixels
     # TIMESTEP = 3600 * 24 * 365 * 10  # Timestep is number of seconds in 10 years.
     TIMESTEP = 3600 * 6
@@ -103,27 +103,27 @@ class BackgroundStars:
 
 def main():
 
-    AU = 149597870700  # 1 Astronomical Unit = 149,597,870,700 meters
-    SOLAR_MASS = 1.989 * 10**30  # Solar mass in kg
-    SAGITTARIUS_A_MASS = (
-        4 * 10**6 * 5 * SOLAR_MASS  # scaled up by 5
+    au = 149597870700  # 1 Astronomical Unit = 149,597,870,700 meters
+    solar_mass = 1.989 * 10**30  # Solar mass in kg
+    sagittarius_a_mass = (
+        4 * 10**6 * 5 * solar_mass  # scaled up by 5
     )  # Sagittarius A* mass is 4 million solar masses.
 
-    sagittarius_a = StellarObject(0, 0, 1, GREEN, SAGITTARIUS_A_MASS)
+    sagittarius_a = StellarObject(0, 0, 1, GREEN, sagittarius_a_mass)
     sagittarius_a.sagittarius_a = True
 
     # stars orbiting Sagittarius A*
-    S2 = StellarObject(-100 * AU, 10, 5, WHITE, 12.5 * SOLAR_MASS)
-    S8 = StellarObject(120 * AU, 10, 5, WHITE, 15 * SOLAR_MASS)
-    S12 = StellarObject(-130 * AU, 10, 5, WHITE, 15 * SOLAR_MASS)
-    S13 = StellarObject(250 * AU, 10, 5, WHITE, 15 * SOLAR_MASS)
+    s2 = StellarObject(-100 * au, 10, 5, WHITE, 12.5 * solar_mass)
+    s8 = StellarObject(120 * au, 10, 5, WHITE, 15 * solar_mass)
+    s12 = StellarObject(-130 * au, 10, 5, WHITE, 15 * solar_mass)
+    s13 = StellarObject(250 * au, 10, 5, WHITE, 15 * solar_mass)
 
-    S2.y_velocity = 7005.3 * 1000
-    S8.y_velocity = -8000 * 1000
-    S12.y_velocity = 6000 * 1000
-    S13.y_velocity = -5000.13 * 1000
+    s2.y_velocity = 7005.3 * 1000
+    s8.y_velocity = -8000 * 1000
+    s12.y_velocity = 6000 * 1000
+    s13.y_velocity = -5000.13 * 1000
 
-    stars = [sagittarius_a, S2, S8, S12, S13]
+    stars = [sagittarius_a, s2, s8, s12, s13]
 
     background_stars = BackgroundStars(30, 1, WHITE)
 
