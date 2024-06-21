@@ -98,7 +98,7 @@ def main():
     S2 = StellarObject(-100 * AU, 10, 5, WHITE, 12.5 * SOLAR_MASS)
     S8 = StellarObject(125 * AU, 10,5, WHITE, 15 * SOLAR_MASS)
     S12 = StellarObject(-130 * AU, 10, 5, WHITE, 15 * SOLAR_MASS)
-    S13 = StellarObject(150 * AU, 10, 5, WHITE, 15 * SOLAR_MASS)
+    S13 = StellarObject(250 * AU, 10, 5, WHITE, 15 * SOLAR_MASS)
 
     S2.y_velocity = 7005.3 * 1000
     S8.y_velocity = -8000 * 1000
