@@ -6,3 +6,5 @@ of the orbits of stars around the supermassive black hole at the
 center of the Milky Way galaxy, sgr A*. 
 
 </pre>
+
+![sgr_A](sgr_A.mov)
