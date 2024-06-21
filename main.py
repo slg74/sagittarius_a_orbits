@@ -1,7 +1,7 @@
 import math
 import pygame
 
-WIDTH, HEIGHT = 800, 800
+WIDTH, HEIGHT = 1800, 800
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption(
     "Stars orbiting the Galactic Central Black Hole, Sagittarius A*"
