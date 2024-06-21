@@ -86,7 +86,7 @@ def main():
     AU = 149597870700  # 1 Astronomical Unit = 149,597,870,700 meters
     SOLAR_MASS = 1.989 * 10 ** 30  # Solar mass in kg
     SAGITTARIUS_A_MASS = (
-        4 * 10 ** 6 * 5 * SOLAR_MASS
+        4 * 10**6 * 5 * SOLAR_MASS     # scaled up by 5
     )  # Sagittarius A* mass is 4 million solar masses.
 
     sagittarius_a = StellarObject(0, 0, 1, GREEN, SAGITTARIUS_A_MASS)
@@ -94,7 +94,7 @@ def main():
 
     # stars orbiting Sagittarius A*
     S2 = StellarObject(-100 * AU, 10, 5, WHITE, 12.5 * SOLAR_MASS)
-    S8 = StellarObject(125 * AU, 10,5, WHITE, 15 * SOLAR_MASS)
+    S8 = StellarObject(120 * AU, 10,5, WHITE, 15 * SOLAR_MASS)
     S12 = StellarObject(-130 * AU, 10, 5, WHITE, 15 * SOLAR_MASS)
     S13 = StellarObject(250 * AU, 10, 5, WHITE, 15 * SOLAR_MASS)
 
