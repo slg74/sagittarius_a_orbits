@@ -7,4 +7,9 @@ center of the Milky Way galaxy, sgr A*.
 
 </pre>
 
+TODO 1: use astropy for constants.  
+TODO 2: mess with orbital eccentricities and semimajor axes.  
+
+
+
 ![sgr_A](sgr_A.gif)
