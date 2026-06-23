@@ -1,160 +1,140 @@
 import math
-import pygame
 import random
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation, PillowWriter
 
-WIDTH, HEIGHT = 800, 600
-WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption(
-    "Stars orbiting the Galactic Central Black Hole, Sagittarius A*"
-)
+AU       = 149597870700   # meters per AU
+G        = 6.67408e-11    # gravitational constant
+TIMESTEP = 3600 * 6       # 6 hours per simulation step
 
-# Colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-ORANGE = (255, 165, 0)
-YELLOW = (255, 255, 0)
-TEAL = (0, 128, 128)
+solar_mass  = 1.989e30
+sgr_a_mass  = 4e6 * 5 * solar_mass  # 4M solar masses, ×5 to speed up orbits
 
-
-class StellarObject:
-
-    # Constants
-    AU = 149597870700  # 1 Astronomical Unit = 149,597,870,700 meters
-    G = 6.67408e-11  # Gravitational constant, hopefully the same almost everywhere.
-    SCALE = 1 / AU  # 1 AU = 100 pixels
-    # TIMESTEP = 3600 * 24 * 365 * 10  # Timestep is number of seconds in 10 years.
-    TIMESTEP = 3600 * 6
-    # TIMESTEP = 3600
-
-    def __init__(self, x, y, radius, color, mass):
-        self.x = x
-        self.y = y
-        self.radius = radius
-        self.color = color
-        self.mass = mass
-
-        # sgrA* central black hole is at (0, 0)
-        self.orbit = []
-        self.sagittarius_a = False
-        self.distance_to_sagittarius_a = 0
-
-        self.x_velocity = 0
-        self.y_velocity = 0
-
-    def draw(self, window):
-
-        x = self.x * self.SCALE + WIDTH // 2
-        y = self.y * self.SCALE + HEIGHT // 2
-
-        pygame.draw.circle(window, self.color, (x, y), self.radius)
-
-    def attraction(self, other_stellar_object):
-        distance_x = other_stellar_object.x - self.x
-        distance_y = other_stellar_object.y - self.y
-        distance = math.sqrt(distance_x**2 + distance_y**2)
-
-        if other_stellar_object.sagittarius_a:
-            self.distance_to_sagittarius_a = distance
-
-        gravitational_force = (
-            self.G * self.mass * other_stellar_object.mass / (distance**2)
-        )
-        theta = math.atan2(distance_y, distance_x)
-        x_force = gravitational_force * math.cos(theta)
-        y_force = gravitational_force * math.sin(theta)
-
-        return x_force, y_force
-
-    def update_position(self, stellar_objects):
-        total_x_force = total_y_force = 0
-
-        for stellar_object in stellar_objects:
-            if stellar_object != self:
-                x_force, y_force = self.attraction(stellar_object)
-                total_x_force += x_force
-                total_y_force += y_force
-
-        # F = ma; a = F/m
-        self.x_velocity += total_x_force / self.mass * self.TIMESTEP
-        self.y_velocity += total_y_force / self.mass * self.TIMESTEP
-
-        self.x += self.x_velocity * self.TIMESTEP
-        self.y += self.y_velocity * self.TIMESTEP
-
-        self.orbit.append((self.x, self.y))
-        # print(self.orbit)
+# (x_m, y_m, vx_m/s, vy_m/s, mass_kg, color, label)
+STARS = [
+    (0,           0,  0,            0,           sgr_a_mass,       'lime',   'Sgr A*'),
+    (-100 * AU,  10,  0,       7005.3e3,  12.5 * solar_mass,  'red',    'S2'),
+    ( 120 * AU,  10,  0,      -8000.0e3,  15.0 * solar_mass,  'yellow', 'S8'),
+    (-130 * AU,  10,  0,       6000.0e3,  15.0 * solar_mass,  'orange', 'S12'),
+    ( 250 * AU,  10,  0,      -5000.13e3, 15.0 * solar_mass,  'lime',   'S13'),
+    (-220 * AU,  10,  0,       5500.13e3, 15.0 * solar_mass,  'teal',   'S14'),
+]
 
 
-class BackgroundStars:
-    def __init__(self, number_of_stars, radius, color):
-        self.number_of_stars = number_of_stars
-        self.stars = []
-        self.radius = radius
-        self.color = color
+def simulate(n_steps):
+    xs  = [s[0] for s in STARS]
+    ys  = [s[1] for s in STARS]
+    vxs = [s[2] for s in STARS]
+    vys = [s[3] for s in STARS]
+    ms  = [s[4] for s in STARS]
+    n   = len(STARS)
 
-        # Generate star positions during initialization
-        for _ in range(self.number_of_stars):
-            x = random.randint(0, WIDTH)
-            y = random.randint(0, HEIGHT)
-            self.stars.append((x, y))
+    hist_x = [[] for _ in range(n)]
+    hist_y = [[] for _ in range(n)]
 
-    def draw(self, window):
-        for x, y in self.stars:
-            pygame.draw.circle(window, self.color, (x, y), self.radius)
+    for step in range(n_steps):
+        if step % 500 == 0:
+            print(f"  step {step}/{n_steps}")
+
+        for i in range(n):
+            hist_x[i].append(xs[i])
+            hist_y[i].append(ys[i])
+
+        ax_ = [0.0] * n
+        ay_ = [0.0] * n
+        for i in range(n):
+            for j in range(n):
+                if i == j:
+                    continue
+                dx = xs[j] - xs[i]
+                dy = ys[j] - ys[i]
+                r  = math.sqrt(dx * dx + dy * dy)
+                f  = G * ms[i] * ms[j] / (r * r)
+                th = math.atan2(dy, dx)
+                ax_[i] += f * math.cos(th) / ms[i]
+                ay_[i] += f * math.sin(th) / ms[i]
+
+        for i in range(n):
+            vxs[i] += ax_[i] * TIMESTEP
+            vys[i] += ay_[i] * TIMESTEP
+            xs[i]  += vxs[i] * TIMESTEP
+            ys[i]  += vys[i] * TIMESTEP
+
+    return hist_x, hist_y
 
 
 def main():
+    N_SIM      = 3000  # ~2 simulation years; S2 completes ~9 orbits
+    FRAME_STEP = 6     # render every 6th step → 500 gif frames at 30 fps ≈ 17s
+    TRAIL      = 300   # sim-steps of fading trail per star
 
-    au = 149597870700  # 1 Astronomical Unit = 149,597,870,700 meters
-    solar_mass = 1.989 * 10**30  # Solar mass in kg
-    sagittarius_a_mass = (
-        4 * 10**6 * 5 * solar_mass  # scaled up by 5
-    )  # Sagittarius A* mass is 4 million solar masses.
+    print("Simulating orbits...")
+    hist_x, hist_y = simulate(N_SIM)
+    frame_steps = list(range(0, N_SIM, FRAME_STEP))
+    print(f"  {len(frame_steps)} frames to animate.")
 
-    sagittarius_a = StellarObject(0, 0, 1, GREEN, sagittarius_a_mass)
-    sagittarius_a.sagittarius_a = True
+    # ── figure ────────────────────────────────────────────────────
+    fig, ax = plt.subplots(figsize=(9, 7), facecolor='black')
+    ax.set_facecolor('black')
+    XLIM, YLIM = 330, 270
+    ax.set_xlim(-XLIM, XLIM)
+    ax.set_ylim(-YLIM, YLIM)
+    ax.set_aspect('equal')
+    ax.set_xlabel('AU', color='#aaaaaa', fontsize=10)
+    ax.set_ylabel('AU', color='#aaaaaa', fontsize=10)
+    ax.set_title('Stars Orbiting Sagittarius A*', color='white', fontsize=13, pad=10)
+    ax.tick_params(colors='#aaaaaa', labelsize=8)
+    for spine in ax.spines.values():
+        spine.set_edgecolor('#333333')
+    ax.grid(True, color='#111111', linewidth=0.5, zorder=0)
 
-    # stars orbiting Sagittarius A*
-    s2 = StellarObject(-100 * au, 10, 4, RED, 12.5 * solar_mass)
-    s8 = StellarObject(120 * au, 10, 4, YELLOW, 15 * solar_mass)
-    s12 = StellarObject(-130 * au, 10, 4, ORANGE, 15 * solar_mass)
-    s13 = StellarObject(250 * au, 10, 4, GREEN, 15 * solar_mass)
-    s14 = StellarObject(-220 * au, 10, 4, TEAL, 15 * solar_mass)
+    # static background stars
+    rng = random.Random(7)
+    bx = [rng.uniform(-XLIM, XLIM) for _ in range(60)]
+    by = [rng.uniform(-YLIM, YLIM) for _ in range(60)]
+    ax.scatter(bx, by, s=0.6, c='white', zorder=1, alpha=0.7)
 
-    s2.y_velocity = 7005.3 * 1000
-    s8.y_velocity = -8000 * 1000
-    s12.y_velocity = 6000 * 1000
-    s13.y_velocity = -5000.13 * 1000
-    s14.y_velocity = 5500.13 * 1000
+    colors    = [s[5] for s in STARS]
+    labels    = [s[6] for s in STARS]
+    dot_sizes = [150 if i == 0 else 30 for i in range(len(STARS))]
 
-    stars = [sagittarius_a, s2, s8, s12, s13, s14]
+    trail_lines = []
+    dot_markers = []
+    for i, (color, label) in enumerate(zip(colors, labels)):
+        line, = ax.plot([], [], '-', color=color, alpha=0.35, linewidth=0.9, zorder=2)
+        dot = ax.scatter([], [], s=dot_sizes[i], c=color, zorder=4,
+                         label=label,
+                         edgecolors='white' if i == 0 else 'none',
+                         linewidths=0.5)
+        trail_lines.append(line)
+        dot_markers.append(dot)
 
-    background_stars = BackgroundStars(30, 1, WHITE)
+    ax.legend(loc='upper right', fontsize=8,
+              facecolor='#111111', edgecolor='#555555', labelcolor='white',
+              markerscale=0.9, framealpha=0.85)
 
-    run = True
-    clock = pygame.time.Clock()
+    def update(fi):
+        step    = frame_steps[fi]
+        t_start = max(0, step - TRAIL)
+        for i in range(len(STARS)):
+            px = [v / AU for v in hist_x[i][t_start:step + 1]]
+            py = [v / AU for v in hist_y[i][t_start:step + 1]]
+            trail_lines[i].set_data(px, py)
+            if px:
+                dot_markers[i].set_offsets([[px[-1], py[-1]]])
+        return trail_lines + dot_markers
 
-    while run:
+    print("Building animation...")
+    anim = FuncAnimation(fig, update, frames=len(frame_steps), interval=33, blit=True)
 
-        clock.tick(60)
-        WINDOW.fill(BLACK)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-
-        for star in stars:
-            star.update_position(stars)
-            star.draw(WINDOW)
-
-        background_stars.draw(WINDOW)
-
-        pygame.display.update()
-
-    pygame.quit()
+    out = 'sgr_A.gif'
+    print(f"Saving {out} (this takes a minute or two)...")
+    anim.save(out, writer=PillowWriter(fps=30), dpi=90)
+    plt.close()
+    print(f"Done — saved to {out}")
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
