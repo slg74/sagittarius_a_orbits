@@ -94,8 +94,8 @@ def full_ellipse(a_as, e, i_deg, Omega_deg, omega_deg, t_peri, period_yr):
 def main():
     T_START      = 2000.0
     T_END        = 2050.0
-    N_FRAMES     = 300
-    TRAIL_FRAMES = 35     # animation frames shown as trail
+    N_FRAMES     = 800
+    TRAIL_FRAMES = 90     # animation frames shown as trail
 
     t_anim = np.linspace(T_START, T_END, N_FRAMES)
 
@@ -167,26 +167,32 @@ def main():
               'Orbital elements: Gillessen et al. 2017 · GRAVITY Collaboration 2018',
               transform=ax.transAxes, color='#555555', fontsize=6)
 
-    def update(fi):
-        ax.view_init(elev=28, azim=(fi / N_FRAMES) * 300)
-        year_label.set_text(f'Year  {t_anim[fi]:.1f}')
-
-        t0 = max(0, fi - TRAIL_FRAMES)
-        for name, *_ in STARS:
-            x, y, z = all_xyz[name]
-            trail_lines[name].set_data_3d(x[t0:fi+1], y[t0:fi+1], z[t0:fi+1])
-            dot_markers[name].set_data_3d([x[fi]], [y[fi]], [z[fi]])
-
-        return list(trail_lines.values()) + list(dot_markers.values()) + [year_label]
+    def make_update(rotate):
+        def update(fi):
+            if rotate:
+                ax.view_init(elev=28, azim=(fi / N_FRAMES) * 720)
+            year_label.set_text(f'Year  {t_anim[fi]:.1f}')
+            t0 = max(0, fi - TRAIL_FRAMES)
+            for name, *_ in STARS:
+                x, y, z = all_xyz[name]
+                trail_lines[name].set_data_3d(x[t0:fi+1], y[t0:fi+1], z[t0:fi+1])
+                dot_markers[name].set_data_3d([x[fi]], [y[fi]], [z[fi]])
+            return list(trail_lines.values()) + list(dot_markers.values()) + [year_label]
+        return update
 
     print(f"Animating {N_FRAMES} frames ({T_START:.0f}–{T_END:.0f})...")
-    anim = FuncAnimation(fig, update, frames=N_FRAMES, interval=40, blit=False)
 
-    out = 'sgr_A.gif'
-    print(f"Saving {out} (may take a few minutes)...")
-    anim.save(out, writer=PillowWriter(fps=25), dpi=80)
+    for out, rotate in [('sgr_A.gif', True), ('sgr_A_static.gif', False)]:
+        if not rotate:
+            ax.view_init(elev=28, azim=45)
+        anim = FuncAnimation(fig, make_update(rotate),
+                             frames=N_FRAMES, interval=40, blit=False)
+        print(f"Saving {out}...")
+        anim.save(out, writer=PillowWriter(fps=25), dpi=80)
+        print(f"  Done — {out}")
+
     plt.close()
-    print(f"Done — saved to {out}")
+    print("All done.")
 
 
 if __name__ == '__main__':

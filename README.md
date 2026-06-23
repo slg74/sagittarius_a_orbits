@@ -2,7 +2,9 @@
 
 An N-body gravitational simulation of the S-star cluster orbiting [Sagittarius A*](https://en.wikipedia.org/wiki/Sagittarius_A*) — the supermassive black hole at the center of the Milky Way.
 
-![Orbit animation](sgr_A.gif)
+| Rotating view | Fixed view |
+|:---:|:---:|
+| ![Rotating](sgr_A.gif) | ![Static](sgr_A_static.gif) |
 
 ## Overview
 
