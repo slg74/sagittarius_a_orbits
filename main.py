@@ -14,7 +14,7 @@ sgr_a_mass  = 4e6 * 5 * solar_mass  # 4M solar masses, ×5 to speed up orbits
 
 # (x_m, y_m, vx_m/s, vy_m/s, mass_kg, color, label)
 STARS = [
-    (0,           0,  0,            0,           sgr_a_mass,       'lime',   'Sgr A*'),
+    (0,           0,  0,            0,           sgr_a_mass,  'lime',   'Sgr A*'),
     (-100 * AU,  10,  0,       7005.3e3,  12.5 * solar_mass,  'red',    'S2'),
     ( 120 * AU,  10,  0,      -8000.0e3,  15.0 * solar_mass,  'yellow', 'S8'),
     (-130 * AU,  10,  0,       6000.0e3,  15.0 * solar_mass,  'orange', 'S12'),
